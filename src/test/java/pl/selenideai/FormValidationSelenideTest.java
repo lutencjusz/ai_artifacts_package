@@ -21,7 +21,7 @@ class FormValidationSelenideTest {
     @BeforeAll
     static void setupBrowser() {
         Configuration.browser = "firefox";
-        Configuration.headless = false;
+        Configuration.headless = true;
         Configuration.timeout = 10000;
         pageUrl = Path.of("index.html").toAbsolutePath().toUri().toString();
     }
