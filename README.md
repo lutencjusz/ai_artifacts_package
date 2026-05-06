@@ -17,6 +17,14 @@ Projekt zawiera lokalny formularz rejestracji (`index.html`) oraz zestaw testow 
 mvn test
 ```
 
+## Publikacja katalogu .github do GitHub Packages
+
+- Workflow: `.github/workflows/publish-github-dir-package.yml`
+- Publikacja tworzy artefakt `zip` z katalogiem `.github` jako classifier `github-dir`.
+- Uruchom workflow recznie z zakladki `Actions` (opcjonalnie podaj `package_version`).
+
+Po `BUILD SUCCESS` pakiet bedzie widoczny w sekcji `Packages` repozytorium.
+
 ## Uwagi
 
 - Testy otwieraja lokalny plik `index.html` przez URI `file:///...`.

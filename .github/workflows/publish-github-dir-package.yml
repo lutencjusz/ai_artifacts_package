@@ -1,0 +1,44 @@
+name: publish-github-dir-package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_version:
+        description: "Opcjonalna wersja pakietu (np. 1.0.1). Puste = wersja z pom.xml"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 and Maven server credentials
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Set package version (optional)
+        if: ${{ inputs.package_version != '' }}
+        run: mvn -B versions:set -DnewVersion=${{ inputs.package_version }} -DgenerateBackupPoms=false
+
+      - name: Run tests
+        run: mvn -B test
+
+      - name: Deploy package to GitHub Packages (Maven)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B deploy -DskipTests -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}
+
