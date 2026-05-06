@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rejestracja</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.12);
+      padding: 40px 48px;
+      width: 420px;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: 28px; color: #1a202c; }
+    .field { margin-bottom: 18px; }
+    label { display: block; font-size: .875rem; font-weight: 600; margin-bottom: 6px; color: #2d3748; }
+    input {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid #cbd5e0; border-radius: 6px;
+      font-size: 1rem; transition: border-color .2s;
+    }
+    input:focus { outline: none; border-color: #4299e1; }
+    input.error { border-color: #e53e3e; }
+    .error-msg {
+      color: #e53e3e; font-size: .8rem; margin-top: 4px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+    button[type="submit"] {
+      width: 100%; padding: 12px;
+      background: #4299e1; color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 1rem; font-weight: 600;
+      cursor: pointer; margin-top: 8px;
+      transition: background .2s;
+    }
+    button[type="submit"]:hover { background: #3182ce; }
+    #success-msg {
+      display: none;
+      background: #c6f6d5; color: #276749;
+      border-radius: 6px; padding: 14px;
+      margin-top: 18px; font-weight: 600;
+      text-align: center;
+    }
+    #success-msg.visible { display: block; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Utwórz konto</h1>
+  <form id="register-form" novalidate autocomplete="off">
+
+    <div class="field">
+      <label for="firstName">Imię *</label>
+      <input type="text" id="firstName" name="firstName"
+             placeholder="Jan" autocomplete="given-name"/>
+      <div class="error-msg" id="firstName-error">Imię jest wymagane.</div>
+    </div>
+
+    <div class="field">
+      <label for="lastName">Nazwisko *</label>
+      <input type="text" id="lastName" name="lastName"
+             placeholder="Kowalski" autocomplete="family-name"/>
+      <div class="error-msg" id="lastName-error">Nazwisko jest wymagane.</div>
+    </div>
+
+    <div class="field">
+      <label for="email">Adres e-mail *</label>
+      <input type="email" id="email" name="email"
+             placeholder="jan@example.com" autocomplete="off"/>
+      <div class="error-msg" id="email-error">Podaj prawidłowy adres e-mail.</div>
+    </div>
+
+    <div class="field">
+      <label for="password">Hasło * <small style="font-weight:400">(min. 8 znaków)</small></label>
+      <input type="password" id="password" name="password"
+             placeholder="••••••••" autocomplete="new-password" data-lpignore="true"/>
+      <div class="error-msg" id="password-error">Hasło musi mieć co najmniej 8 znaków.</div>
+    </div>
+
+    <div class="field">
+      <label for="confirmPassword">Potwierdź hasło *</label>
+      <input type="password" id="confirmPassword" name="confirmPassword"
+             placeholder="••••••••" autocomplete="new-password" data-lpignore="true"/>
+      <div class="error-msg" id="confirmPassword-error">Hasła nie są identyczne.</div>
+    </div>
+
+    <button type="submit" id="submit-btn">Zarejestruj się</button>
+  </form>
+  <div id="success-msg">✅ Rejestracja zakończona pomyślnie!</div>
+</div>
+
+<script>
+  const form = document.getElementById('register-form');
+
+  function showError(fieldId, msg) {
+    const input = document.getElementById(fieldId);
+    const err   = document.getElementById(fieldId + '-error');
+    input.classList.add('error');
+    err.textContent = msg;
+    err.classList.add('visible');
+  }
+
+  function clearError(fieldId) {
+    const input = document.getElementById(fieldId);
+    const err   = document.getElementById(fieldId + '-error');
+    input.classList.remove('error');
+    err.classList.remove('visible');
+  }
+
+  function validateEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const firstName       = document.getElementById('firstName').value.trim();
+    const lastName        = document.getElementById('lastName').value.trim();
+    const email           = document.getElementById('email').value.trim();
+    const password        = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Imię
+    clearError('firstName');
+    if (!firstName) { showError('firstName', 'Imię jest wymagane.'); valid = false; }
+
+    // Nazwisko
+    clearError('lastName');
+    if (!lastName) { showError('lastName', 'Nazwisko jest wymagane.'); valid = false; }
+
+    // E-mail
+    clearError('email');
+    if (!email) {
+      showError('email', 'Adres e-mail jest wymagany.'); valid = false;
+    } else if (!validateEmail(email)) {
+      showError('email', 'Podaj prawidłowy adres e-mail.'); valid = false;
+    }
+
+    // Hasło
+    clearError('password');
+    if (!password) {
+      showError('password', 'Hasło jest wymagane.'); valid = false;
+    } else if (password.length < 8) {
+      showError('password', 'Hasło musi mieć co najmniej 8 znaków.'); valid = false;
+    }
+
+    // Potwierdź hasło
+    clearError('confirmPassword');
+    if (!confirmPassword) {
+      showError('confirmPassword', 'Potwierdzenie hasła jest wymagane.'); valid = false;
+    } else if (password !== confirmPassword) {
+      showError('confirmPassword', 'Hasła nie są identyczne.'); valid = false;
+    }
+
+    if (valid) {
+      form.style.display = 'none';
+      document.getElementById('success-msg').classList.add('visible');
+    }
+  });
+</script>
+</body>
+</html>
+
